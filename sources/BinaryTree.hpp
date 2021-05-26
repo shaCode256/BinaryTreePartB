@@ -26,7 +26,7 @@ namespace ariel
 			}
 		};
 
-    static inline std::vector<struct Node*> nodesTraverseVector;
+		static inline std::vector<struct Node *> nodesTraverseVector;
 
 	public:
 		static inline void fillVectorPostorder(struct Node *node)
@@ -82,7 +82,8 @@ namespace ariel
 			Node *recursive_traversal_ptr;
 
 		public:
-			pre_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){
+			pre_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr)
+			{
 				nodesTraverseVector.clear();
 				fillVectorPreorder(ptr);
 			};
@@ -100,8 +101,8 @@ namespace ariel
 			// ++i;
 			pre_order_iterator &operator++()
 			{
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return *this;
 			}
 
@@ -109,8 +110,8 @@ namespace ariel
 			const pre_order_iterator operator++(int)
 			{
 				pre_order_iterator tmp = *this;
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return tmp;
 			}
 
@@ -132,7 +133,8 @@ namespace ariel
 			Node *recursive_traversal_ptr;
 
 		public:
-			in_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){
+			in_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr)
+			{
 				nodesTraverseVector.clear();
 				fillVectorInorder(ptr);
 			};
@@ -150,8 +152,8 @@ namespace ariel
 			// ++i;
 			in_order_iterator &operator++()
 			{
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return *this;
 			}
 
@@ -159,8 +161,8 @@ namespace ariel
 			const in_order_iterator operator++(int)
 			{
 				in_order_iterator tmp = *this;
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return tmp;
 			}
 
@@ -182,7 +184,8 @@ namespace ariel
 			Node *recursive_traversal_ptr;
 
 		public:
-			post_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){
+			post_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr)
+			{
 				nodesTraverseVector.clear();
 				fillVectorPostorder(ptr);
 			};
@@ -200,8 +203,8 @@ namespace ariel
 			// ++i;
 			post_order_iterator &operator++()
 			{
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return *this;
 			}
 
@@ -209,8 +212,8 @@ namespace ariel
 			const post_order_iterator operator++(int)
 			{
 				post_order_iterator tmp = *this;
-				curr_node_ptr= nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
+				curr_node_ptr = nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
 				return tmp;
 			}
 
@@ -227,6 +230,7 @@ namespace ariel
 
 		int a = 0;
 		Node *root;
+		Node *iterNode = root;
 		//Node rootNode();
 
 	public:
@@ -248,39 +252,78 @@ namespace ariel
 		{
 			return *this;
 		}; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
-		pre_order_iterator begin_preorder()
-		{
-			return pre_order_iterator(root);
-		};
 		pre_order_iterator begin()
 		{
-			return pre_order_iterator(root);
+			fillVectorPreorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.front();
+			}
+			return pre_order_iterator(iterNode);
 		};
 		pre_order_iterator end()
 		{
-			return pre_order_iterator(nullptr);
+			fillVectorPreorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.back();
+			}
+			return pre_order_iterator(iterNode);
 		}
+		pre_order_iterator begin_preorder()
+		{
+			fillVectorPreorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.front();
+			}
+			return pre_order_iterator(iterNode);
+		};
 		pre_order_iterator end_preorder()
 		{
-			return pre_order_iterator(nullptr);
+			fillVectorPreorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.back();
+			}
+			return pre_order_iterator(iterNode);
 		}; // - מחזירות איטרטורים לצורך מעבר בסדר preorder (אב - שמאל - ימין).
 		in_order_iterator begin_inorder()
 		{
-			return in_order_iterator(root);
+			fillVectorInorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.front();
+			}
+			return in_order_iterator(iterNode);
 		};
 		in_order_iterator end_inorder()
 		{
-			return in_order_iterator(root);
+			fillVectorInorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.back();
+			}
+			return in_order_iterator(iterNode);
 		}; //- מחזירות איטרטורים לצורך מעבר בסדר inorder (שמאל - אב - ימין).
 		post_order_iterator begin_postorder()
 		{
-			return post_order_iterator(root);
+			fillVectorPostorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.front();
+			}
+			return post_order_iterator(iterNode);
 		};
 		post_order_iterator end_postorder()
 		{
-			return post_order_iterator(root);
+			fillVectorPostorder(root);
+			if (!nodesTraverseVector.empty())
+			{
+				iterNode = nodesTraverseVector.back();
+			}
+			return post_order_iterator(iterNode);
 		}; //- מחזירות איטרטורים לצורך מעבר בסדר postorder (שמאל - ימין - אב).
-
 
 	}; //END OF CLASS BinaryTree
 
