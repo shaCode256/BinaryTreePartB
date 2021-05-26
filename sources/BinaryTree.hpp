@@ -26,41 +26,40 @@ namespace ariel
 			}
 		};
 
-
     static inline std::vector<struct Node*> nodesTraverseVector;
 
 	public:
-			static void fillVectorPostorder(struct Node *node)
+		static inline void fillVectorPostorder(struct Node *node)
 		{
 			if (node == NULL)
 				return;
 
 			// first recur on left subtree
-			fillVectorPostorder(node->left);
+			fillVectorPostorder(node->left_son);
 
 			// then recur on right subtree
-			fillVectorPostorder(node->right);
+			fillVectorPostorder(node->right_son);
 
 			// now deal with the node
 			nodesTraverseVector.push_back(node);
 		}
 
-		static void fillStackInorder(struct Node *node)
+		static inline void fillVectorInorder(struct Node *node)
 		{
 			if (node == NULL)
 				return;
 
 			/* first recur on left child */
-			fillStackInorder(node->left);
+			fillVectorInorder(node->left_son);
 
 			/* then print the data of node */
 			nodesTraverseVector.push_back(node);
 
 			/* now recur on right child */
-			fillVectorInorder(node->right);
+			fillVectorInorder(node->right_son);
 		}
 
-		static void fillVectorPreorder(struct Node *node)
+		static void inline fillVectorPreorder(struct Node *node)
 		{
 			if (node == NULL)
 				return;
@@ -134,7 +133,8 @@ namespace ariel
 
 		public:
 			in_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){
-
+				nodesTraverseVector.clear();
+				fillVectorInorder(ptr);
 			};
 
 			T &operator*() const
@@ -150,17 +150,8 @@ namespace ariel
 			// ++i;
 			in_order_iterator &operator++()
 			{
-				if (curr_node_ptr->left_son != nullptr)
-				{
-					recursive_traversal_ptr = curr_node_ptr;
-					curr_node_ptr = curr_node_ptr->left_son;
-				}
-				else
-				{
-					curr_node_ptr = recursive_traversal_ptr->right_son;
-				}
-				return *this;
-				//iterate to the next^ check
+				curr_node_ptr= nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
 				return *this;
 			}
 
@@ -168,15 +159,8 @@ namespace ariel
 			const in_order_iterator operator++(int)
 			{
 				in_order_iterator tmp = *this;
-				if (curr_node_ptr->left_son != nullptr)
-				{
-					recursive_traversal_ptr = curr_node_ptr;
-					curr_node_ptr = curr_node_ptr->left_son;
-				}
-				else
-				{
-					curr_node_ptr = recursive_traversal_ptr->right_son;
-				}
+				curr_node_ptr= nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
 				return tmp;
 			}
 
@@ -198,7 +182,10 @@ namespace ariel
 			Node *recursive_traversal_ptr;
 
 		public:
-			post_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){};
+			post_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr){
+				nodesTraverseVector.clear();
+				fillVectorPostorder(ptr);
+			};
 
 			T &operator*() const
 			{
@@ -213,7 +200,8 @@ namespace ariel
 			// ++i;
 			post_order_iterator &operator++()
 			{
-				//iterate to the next
+				curr_node_ptr= nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
 				return *this;
 			}
 
@@ -221,7 +209,8 @@ namespace ariel
 			const post_order_iterator operator++(int)
 			{
 				post_order_iterator tmp = *this;
-				//iterate to the next
+				curr_node_ptr= nodesTraverseVector.front();
+				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector 
 				return tmp;
 			}
 
