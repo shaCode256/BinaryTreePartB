@@ -7,6 +7,8 @@
 #include <set>
 #include <bits/stdc++.h>
 #include <vector>
+#include <iostream>	 // std::cout
+#include <algorithm> // std::find
 
 namespace ariel
 {
@@ -17,18 +19,18 @@ namespace ariel
 		struct Node
 		{
 			T value;
-			struct Node *right_son;
-			struct Node *left_son;
-			Node(const T &val)
-				: value(val), left_son(nullptr), right_son(nullptr){};
-			Node()
-			{
-			}
+			Node *right_son;
+			Node *left_son;
 		};
+
+
 
 		static inline std::vector<struct Node *> nodesTraverseVector;
 
 	public:
+		Node *root = new Node();
+		Node *iterNode = root;
+
 		static inline void fillVectorPostorder(struct Node *node)
 		{
 			if (node == NULL)
@@ -228,28 +230,76 @@ namespace ariel
 			}
 		}; // END OF CLASS post_order_iterator
 
-		int a = 0;
-		Node *root;
-		Node *iterNode = root;
 		//Node rootNode();
 
 	public:
-		BinaryTree() : root(nullptr){};
+		BinaryTree() : root(){};
 		friend std::ostream &operator<<(std::ostream &outStream, BinaryTree &bTree)
 		{
 			return outStream;
 		}
 		std::map<int, int> example;
-		BinaryTree add_root(T root)
+		BinaryTree add_root(T rootAdd)
 		{
+			Node *root= new Node;
+			root->value=rootAdd;
 			return *this;
 		}; //- מקבלת קלט אחד ושמה אותו בשורש של העץ. אם כבר יש משהו בשורש, הוא מוחלף.
 		BinaryTree &add_left(T exist, T toAddLeft)
 		{
+			fillVectorPreorder(root);
+			bool found = false;
+			Node *nodeFound;
+			if (nodesTraverseVector.empty())
+			{
+				std::cout << "tree is empty \n";
+			}
+			else
+			{
+				for (Node *i : nodesTraverseVector)
+				{
+					if (i->value == exist)
+					{
+						found = true;
+						break;
+					}
+					// std::cout << "THIS" << i->value;
+				}
+			}
+			if (found == true)
+			{
+				nodeFound->left_son = new Node();
+				nodeFound->left_son->value = toAddLeft;
+			}
+			else
+			{	// element wasn't found
+				//throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
+				//std::cout << "HEY" <<toAddLeft;
+			}
 			return *this;
 		}; //- מקבלת שני קלטים: הקלט הראשון מציין דבר שכבר קיים בעץ. הקלט השני מציין דבר חדש שיש להוסיף בתור הילד השמאלי שלו (אם כבר יש לו ילד שמאלי - יש להחליף את התוכן שלו).
 		BinaryTree add_right(T exist, T toAddRight)
 		{
+			fillVectorPreorder(root);
+			bool found = false;
+			Node *nodeFound;
+			for (Node *i : nodesTraverseVector)
+			{
+				if (i->value == exist)
+				{
+					found = true;
+					break;
+				}
+			}
+			if (found == true)
+			{
+				nodeFound->right_son = new Node();
+				nodeFound->right_son->value = toAddRight;
+			}
+			else
+			{	// element wasn't found
+				//throw std::invalid_argument ("add_right error: Element exist is not found in this tree");
+			}
 			return *this;
 		}; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
 		pre_order_iterator begin()
