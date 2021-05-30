@@ -24,48 +24,73 @@ namespace ariel
 			T value;
 			shared_ptr<Node> right_son;
 			shared_ptr<Node> left_son;
+			shared_ptr<Node> parent;
 		};
-
-		static inline std::vector<struct shared_ptr<Node>> nodesTraverseVector;
 
 	public:
 		shared_ptr<Node> root = make_shared<Node>();
-		shared_ptr<Node> iterNode = root;
+		shared_ptr<Node> iterNode;
 
-		static inline void fillVectorPostorder(struct shared_ptr<Node> node)
+		static inline shared_ptr<Node> preorderSuccessor(shared_ptr<Node> n)
 		{
-			if (node == nullptr)
-				return;
+			// If left child exists, then it is preorder successor.
+			if (n->left_son)
+				return n->left_son;
 
-			fillVectorPostorder(node->left_son);
+			// If left child does not exist, then travel up (using parent pointers)
+			// until we reach a node which is left child of its parent.
+			shared_ptr<Node> curr = n;
+			shared_ptr<Node> parent = curr->parent;
+			while (parent != NULL && parent->right_son == curr)
+			{
+				curr = curr->parent;
+				parent = parent->parent;
+			}
 
-			fillVectorPostorder(node->right_son);
+			// If we reached root, then the given, node has no preorder successor
+			if (parent == NULL)
+				return NULL;
 
-			nodesTraverseVector.push_back(node);
+			return parent->right_son;
 		}
 
-		static inline void fillVectorInorder(struct shared_ptr<Node> node)
+		static inline shared_ptr<Node> inorderSuccessor(shared_ptr<Node> node)
 		{
-			if (node == nullptr)
-				return;
-
-			fillVectorInorder(node->left_son);
-
-			nodesTraverseVector.push_back(node);
-
-			fillVectorInorder(node->right_son);
+			if (node->right_son)
+			{
+				node = node->right_son;
+				while (node->left_son)
+					node = node->left_son;
+				return node;
+			}
+			while (node->parent && node != node->parent->left_son)
+			{
+				node = node->parent;
+			}
+			return node->parent;
 		}
 
-		static void inline fillVectorPreorder(struct shared_ptr<Node> node)
+		static inline shared_ptr<Node> postorderSuccessor(shared_ptr<Node> root, shared_ptr<Node> n)
 		{
-			if (node == nullptr)
-				return;
+			// Root has no successor in postorder
+			// traversal
+			if (n == root)
+				return NULL;
 
-			nodesTraverseVector.push_back(node);
+			// If given node is right child of its
+			// parent or parent's right is empty, then
+			// parent is postorder successor.
+			shared_ptr<Node> parent = n->parent;
+			if (parent->right_son == NULL || parent->right_son == n)
+				return parent;
 
-			fillVectorPreorder(node->left_son);
+			// In all other cases, find the leftmost
+			// child in right substree of parent.
+			shared_ptr<Node> curr = parent->right_son;
+			while (curr->left_son != NULL)
+				curr = curr->left_son;
 
-			fillVectorPreorder(node->right_son);
+			return curr;
 		}
 
 		// pre_order_iterator inner class:
@@ -78,8 +103,7 @@ namespace ariel
 		public:
 			pre_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				nodesTraverseVector.clear();
-				fillVectorPreorder(ptr);
+				curr_node_ptr= ptr;
 			};
 
 			T &operator*() const
@@ -95,8 +119,7 @@ namespace ariel
 			// ++i;
 			pre_order_iterator &operator++()
 			{
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = preorderSuccessor(curr_node_ptr);
 				return *this;
 			}
 
@@ -104,8 +127,7 @@ namespace ariel
 			const pre_order_iterator operator++(int)
 			{
 				pre_order_iterator tmp = *this;
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = preorderSuccessor(curr_node_ptr);
 				return tmp;
 			}
 
@@ -129,8 +151,7 @@ namespace ariel
 		public:
 			in_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				nodesTraverseVector.clear();
-				fillVectorInorder(ptr);
+				curr_node_ptr= ptr;
 			};
 
 			T &operator*() const
@@ -146,8 +167,7 @@ namespace ariel
 			// ++i;
 			in_order_iterator &operator++()
 			{
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = inorderSuccessor(curr_node_ptr);
 				return *this;
 			}
 
@@ -155,8 +175,7 @@ namespace ariel
 			const in_order_iterator operator++(int)
 			{
 				in_order_iterator tmp = *this;
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = inorderSuccessor(curr_node_ptr);
 				return tmp;
 			}
 
@@ -180,8 +199,7 @@ namespace ariel
 		public:
 			post_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				nodesTraverseVector.clear();
-				fillVectorPostorder(ptr);
+				curr_node_ptr= ptr;
 			};
 
 			T &operator*() const
@@ -197,16 +215,14 @@ namespace ariel
 			// ++i;
 			post_order_iterator &operator++()
 			{
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = postorderSuccessor(curr_node_ptr);
 				return *this;
 			}
 			// i++;
 			const post_order_iterator operator++(int)
 			{
 				post_order_iterator tmp = *this;
-				curr_node_ptr = nodesTraverseVector.front();
-				nodesTraverseVector.erase(nodesTraverseVector.begin()); //delete it from the travese vector
+				curr_node_ptr = postorderSuccessor(curr_node_ptr);
 				return tmp;
 			}
 
@@ -224,7 +240,9 @@ namespace ariel
 		//Node rootNode();
 
 	public:
-		BinaryTree() : root(){};
+		BinaryTree() {
+ 			shared_ptr<Node> root= nullptr;
+		};
 		friend std::ostream &operator<<(std::ostream &outStream, BinaryTree &bTree)
 		{
 			return outStream;
@@ -238,6 +256,7 @@ namespace ariel
 				root->value = rootAdd;
 				root->right_son = nullptr;
 				root->left_son = nullptr;
+				root->parent= nullptr;
 			}
 			//std::cout << "TheRoot" << root << "\n";
 			// shared_ptr<Node>root= make_shared<Node>;
@@ -251,12 +270,13 @@ namespace ariel
 				std::cout << "tree is empty \n";
 				//throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
 			}
-			shared_ptr<Node> nodeFound= ifNodeExists(root, exist);
+			shared_ptr<Node> nodeFound = ifNodeExists(root, exist);
 			if (nodeFound != nullptr)
 			{
 				// std::cout << "found!";
 				nodeFound->left_son = make_shared<Node>();
 				nodeFound->left_son->value = toAddLeft;
+				nodeFound->left_son->parent = nodeFound;
 				nodeFound->left_son->left_son = nullptr;
 				nodeFound->left_son->right_son = nullptr;
 			}
@@ -274,109 +294,54 @@ namespace ariel
 				std::cout << "tree is empty \n";
 				//throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
 			}
-			shared_ptr<Node> nodeFound= ifNodeExists(root, exist);
+			shared_ptr<Node> nodeFound = ifNodeExists(root, exist);
 			if (nodeFound != nullptr)
 			{
 				// std::cout << "found!";
 				nodeFound->right_son = make_shared<Node>();
 				nodeFound->right_son->value = toAddRight;
+				nodeFound->right_son->parent = nodeFound;
 				nodeFound->right_son->left_son = nullptr;
 				nodeFound->right_son->right_son = nullptr;
 			}
 			else
 			{	// element wasn't found
 				//throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
-				//std::cout << "HEY" <<toAddLeft;
 			}
 			return *this;
 		}; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
 		pre_order_iterator begin()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.front();
-			}
-			return pre_order_iterator(iterNode);
+			return pre_order_iterator(root);
 		};
 		pre_order_iterator end()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.back();
-			}
-			//iterNode= nullptr;
-			return pre_order_iterator(iterNode);
+			return pre_order_iterator(root);
 		}
 		pre_order_iterator begin_preorder()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.front();
-			}
-			return pre_order_iterator(iterNode);
+			return pre_order_iterator(root);
 		};
 		pre_order_iterator end_preorder()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.back();
-			}
-			return pre_order_iterator(iterNode);
+			return pre_order_iterator(root);
 		}; // - מחזירות איטרטורים לצורך מעבר בסדר preorder (אב - שמאל - ימין).
 		in_order_iterator begin_inorder()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.front();
-			}
-			return in_order_iterator(iterNode);
+			return in_order_iterator(root);
 		};
 		in_order_iterator end_inorder()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				//cout << "yup";
-				iterNode = nodesTraverseVector.back();
-			}
-			//iterNode= nullptr;
-			return in_order_iterator(iterNode);
+			return in_order_iterator(nullptr);
 		}; //- מחזירות איטרטורים לצורך מעבר בסדר inorder (שמאל - אב - ימין).
 		post_order_iterator begin_postorder()
 		{
-			// nodesTraverseVector.clear();
-			// fillVectorPostorder(root);
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.front();
-			}
-			return post_order_iterator(iterNode);
+			return post_order_iterator(root);
 		};
 		post_order_iterator end_postorder()
 		{
-			iterNode= nullptr;
-			if (!nodesTraverseVector.empty())
-			{
-				iterNode = nodesTraverseVector.back();
-			}
-			//iterNode= nullptr;
-			return post_order_iterator(iterNode);
+			return post_order_iterator(nullptr);
 		}; //- מחזירות איטרטורים לצורך מעבר בסדר postorder (שמאל - ימין - אב).
-		
-		void print_tree()
-		{
-			fillVectorPostorder(root);
-			for (shared_ptr<Node> &i : nodesTraverseVector)
-			{
-				std::cout << i->value;
-			}
-		}
 
 		void printBT(const std::string &prefix, const shared_ptr<Node> node, bool isLeft)
 		{
@@ -416,12 +381,15 @@ namespace ariel
 
 			return res2;
 		}
-	}; //END OF CLASS BinaryTree
 
-}; //END OF NAMESPACE ariel
+	}; //END OF CLASS BinaryTree
+};	   //END OF NAMESPACE ariel
 
 //Reference: https://github.com/erelsgl-at-ariel/cpp-5781/tree/master/08-templates-iterators
 // https://www.geeksforgeeks.org/tree-traversals-inorder-preorder-and-postorder/
 // https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
 // https://www.geeksforgeeks.org/search-a-node-in-binary-tree/
 // https://www.geeksforgeeks.org/iterative-preorder-traversal/
+// https://www.tutorialspoint.com/inorder-successor-in-bst-ii-in-cplusplus
+// https://www.geeksforgeeks.org/preorder-successor-node-binary-tree/
+// https://www.geeksforgeeks.org/postorder-successor-node-binary-tree/
