@@ -31,68 +31,6 @@ namespace ariel
 		shared_ptr<Node> root = make_shared<Node>();
 		shared_ptr<Node> iterNode;
 
-		static inline shared_ptr<Node> preorderSuccessor(shared_ptr<Node> n)
-		{
-			// If left child exists, then it is preorder successor.
-			if (n->left_son)
-				return n->left_son;
-
-			// If left child does not exist, then travel up (using parent pointers)
-			// until we reach a node which is left child of its parent.
-			shared_ptr<Node> curr = n;
-			shared_ptr<Node> parent = curr->parent;
-			while (parent != NULL && parent->right_son == curr)
-			{
-				curr = curr->parent;
-				parent = parent->parent;
-			}
-
-			// If we reached root, then the given, node has no preorder successor
-			if (parent == NULL)
-				return NULL;
-
-			return parent->right_son;
-		}
-
-		static inline shared_ptr<Node> inorderSuccessor(shared_ptr<Node> node)
-		{
-			if (node->right_son)
-			{
-				node = node->right_son;
-				while (node->left_son)
-					node = node->left_son;
-				return node;
-			}
-			while (node->parent && node != node->parent->left_son)
-			{
-				node = node->parent;
-			}
-			return node->parent;
-		}
-
-		static inline shared_ptr<Node> postorderSuccessor(shared_ptr<Node> root, shared_ptr<Node> n)
-		{
-			// Root has no successor in postorder
-			// traversal
-			if (n == root)
-				return NULL;
-
-			// If given node is right child of its
-			// parent or parent's right is empty, then
-			// parent is postorder successor.
-			shared_ptr<Node> parent = n->parent;
-			if (parent->right_son == NULL || parent->right_son == n)
-				return parent;
-
-			// In all other cases, find the leftmost
-			// child in right substree of parent.
-			shared_ptr<Node> curr = parent->right_son;
-			while (curr->left_son != NULL)
-				curr = curr->left_son;
-
-			return curr;
-		}
-
 		// pre_order_iterator inner class:
 		class pre_order_iterator
 		{
@@ -101,9 +39,32 @@ namespace ariel
 			shared_ptr<Node> recursive_traversal_ptr;
 
 		public:
+			shared_ptr<Node> preorderSuccessor(shared_ptr<Node> n)
+			{
+				// If left child exists, then it is preorder successor.
+				if (n->left_son)
+					return n->left_son;
+
+				// If left child does not exist, then travel up (using parent pointers)
+				// until we reach a node which is left child of its parent.
+				shared_ptr<Node> curr = n;
+				shared_ptr<Node> parent = curr->parent;
+				while (parent != nullptr && parent->right_son == curr)
+				{
+					curr = curr->parent;
+					parent = parent->parent;
+				}
+
+				// If we reached root, then the given, node has no preorder successor
+				if (parent == nullptr)
+					return nullptr;
+
+				return parent->right_son;
+			}
+
 			pre_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				curr_node_ptr= ptr;
+				curr_node_ptr = ptr;
 			};
 
 			T &operator*() const
@@ -149,9 +110,27 @@ namespace ariel
 			shared_ptr<Node> recursive_traversal_ptr;
 
 		public:
+
+		
+		shared_ptr<Node> inorderSuccessor(shared_ptr<Node> node)
+		{
+			if (node->right_son)
+			{
+				node = node->right_son;
+				while (node->left_son)
+					node = node->left_son;
+				return node;
+			}
+			while (node->parent && node != node->parent->left_son)
+			{
+				node = node->parent;
+			}
+			return node->parent;
+		}
+		
 			in_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				curr_node_ptr= ptr;
+				curr_node_ptr = ptr;
 			};
 
 			T &operator*() const
@@ -197,9 +176,33 @@ namespace ariel
 			shared_ptr<Node> recursive_traversal_ptr;
 
 		public:
+
+			shared_ptr<Node> postorderSuccessor(shared_ptr<Node> n)
+		{
+			// Root has no successor in postorder
+			// traversal
+			if (n->parent== nullptr)
+				return nullptr;
+
+			// If given node is right child of its
+			// parent or parent's right is empty, then
+			// parent is postorder successor.
+			shared_ptr<Node> parent = n->parent;
+			if (parent->right_son == nullptr || parent->right_son == n)
+				return parent;
+
+			// In all other cases, find the leftmost
+			// child in right substree of parent.
+			shared_ptr<Node> curr = parent->right_son;
+			while (curr->left_son != nullptr)
+				curr = curr->left_son;
+
+			return curr;
+		}
+
 			post_order_iterator(shared_ptr<Node> ptr = nullptr) : curr_node_ptr(ptr)
 			{
-				curr_node_ptr= ptr;
+				curr_node_ptr = ptr;
 			};
 
 			T &operator*() const
@@ -240,8 +243,9 @@ namespace ariel
 		//Node rootNode();
 
 	public:
-		BinaryTree() {
- 			shared_ptr<Node> root= nullptr;
+		BinaryTree()
+		{
+			shared_ptr<Node> root = nullptr;
 		};
 		friend std::ostream &operator<<(std::ostream &outStream, BinaryTree &bTree)
 		{
@@ -256,7 +260,7 @@ namespace ariel
 				root->value = rootAdd;
 				root->right_son = nullptr;
 				root->left_son = nullptr;
-				root->parent= nullptr;
+				root->parent = nullptr;
 			}
 			//std::cout << "TheRoot" << root << "\n";
 			// shared_ptr<Node>root= make_shared<Node>;
@@ -365,7 +369,7 @@ namespace ariel
 			printBT("", node, false);
 		}
 
-		shared_ptr<Node> ifNodeExists(shared_ptr<Node> node, int key)
+		shared_ptr<Node> ifNodeExists(shared_ptr<Node> node, T key)
 		{
 			if (node == nullptr)
 				return nullptr;
