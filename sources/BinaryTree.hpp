@@ -347,6 +347,9 @@ namespace ariel
                 }
                 else
                 {
+                    if(nodeFound->left_son->value== toAddLeft){
+                        throw std::invalid_argument("add_left error: Element with this value alreay exists in that position");
+                    }
                     nodeFound->left_son->value = toAddLeft;
                 }
             }
@@ -374,6 +377,9 @@ namespace ariel
                 }
                 else
                 {
+                    if(nodeFound->right_son->value== toAddRight){
+                        throw std::invalid_argument("add_right error: Element with this value alreay exists in that position");
+                    }
                     nodeFound->right_son->value = toAddRight;
                 }
             }
@@ -504,20 +510,16 @@ namespace ariel
             {
                 return nullptr;
             }
-
             if (node->value == key)
             {
                 return node;
             }
-
             Node *res1 = ifNodeExists(node->left_son, key);
             if (res1 != nullptr)
             {
                 return res1;
             }
-
             Node *res2 = ifNodeExists(node->right_son, key);
-
             return res2;
         }
 
