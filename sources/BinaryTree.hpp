@@ -27,6 +27,7 @@ namespace ariel
             shared_ptr<Node> left_son;
             shared_ptr<Node> parent;
             Node(const T &val) : value(val), right_son(nullptr), left_son(nullptr), parent(nullptr) {}
+            Node(): value(0){}
         };
 
     public:
@@ -43,9 +44,9 @@ namespace ariel
         public:
             shared_ptr<Node> preorderSuccessor(shared_ptr<Node> n)
             {
-                if (n->left_son)
+                if (n->left_son){
                     return n->left_son;
-
+                }
                 shared_ptr<Node> curr = n;
                 shared_ptr<Node> parent = curr->parent;
                 while (parent != nullptr && parent->right_son == curr)
@@ -54,8 +55,9 @@ namespace ariel
                     parent = parent->parent;
                 }
 
-                if (parent == nullptr)
+                if (parent == nullptr){
                     return nullptr;
+                }
 
                 return parent->right_son;
             }
@@ -83,19 +85,19 @@ namespace ariel
             }
 
             // i++;
-            pre_order_iterator operator++(int)
+            const pre_order_iterator operator++(int)
             {
                 pre_order_iterator tmp = *this;
                 curr_node_ptr = preorderSuccessor(curr_node_ptr);
                 return tmp;
             }
 
-            bool operator==(pre_order_iterator &rhs) const
+            bool operator==(const pre_order_iterator &rhs) const
             {
                 return curr_node_ptr == rhs.curr_node_ptr;
             }
 
-            bool operator!=(pre_order_iterator &rhs) const
+            bool operator!=(const pre_order_iterator &rhs) const
             {
                 return curr_node_ptr != rhs.curr_node_ptr;
             }
@@ -113,8 +115,9 @@ namespace ariel
                 if (node->right_son)
                 {
                     node = node->right_son;
-                    while (node->left_son)
+                    while (node->left_son){
                         node = node->left_son;
+                    }
                     return node;
                 }
                 while (node->parent && node != node->parent->left_son)
@@ -147,19 +150,19 @@ namespace ariel
             }
 
             // i++;
-            in_order_iterator operator++(int)
+            const in_order_iterator operator++(int)
             {
                 in_order_iterator tmp = *this;
                 curr_node_ptr = inorderSuccessor(curr_node_ptr);
                 return tmp;
             }
 
-            bool operator==(in_order_iterator &rhs) const
+            bool operator==(const in_order_iterator &rhs) const
             {
                 return curr_node_ptr == rhs.curr_node_ptr;
             }
 
-            bool operator!=(in_order_iterator &rhs) const
+            bool operator!=(const in_order_iterator &rhs) const
             {
                 return curr_node_ptr != rhs.curr_node_ptr;
             }
@@ -216,19 +219,19 @@ namespace ariel
                 return *this;
             }
             // i++;
-            post_order_iterator operator++(int)
+            const post_order_iterator operator++(int)
             {
                 post_order_iterator tmp = *this;
                 curr_node_ptr = postorderSuccessor(curr_node_ptr);
                 return tmp;
             }
 
-            bool operator==(post_order_iterator &rhs) const
+            bool operator==(const post_order_iterator &rhs) const
             {
                 return curr_node_ptr == rhs.curr_node_ptr;
             }
 
-            bool operator!=(post_order_iterator &rhs) const
+            bool operator!=(const post_order_iterator &rhs) const
             {
                 return curr_node_ptr != rhs.curr_node_ptr;
             }
@@ -236,52 +239,50 @@ namespace ariel
 
         //Node rootNode();
 
-    public:
         BinaryTree()
         {
             shared_ptr<Node> root = nullptr;
         };
 
         //Deep Copy constructor
-        Binarytree &operator=(binarytree &other)
+        BinaryTree &operator=(BinaryTree const &other)
         {
-            deleteTree(root);
-            copyTree(other->root);
+            //deleteTree(root);
+            //copyTree(other->root);
+            return *this;
         }
 
         //coping the nodes of the tree by preorder traversal
-        Node copyTree(Node root)
-        {
-            if (root == nullptr)
-            {
-                return nullptr;
-            }
-            Node newNode = new Node(root.Value);
-            newNode.left_son = copyTree(root.Left);
-            newNode.right_son = copyTree(root.Right);
-            return newNode;
-        }
+        // void copyTree(shared_ptr<Node> root)
+        // {
+        //     if (root == nullptr)
+        //     {
+        //         return;
+        //     }
+        //     Node newNode = Node(root->value);
+        //     newNode.left_son = copyTree(root->left_son);
+        //     newNode.right_son = copyTree(root->right_son);
+        // }
 
         //copying the tree
-        void deleteTree(node *node)
-        {
-            if (node == nullptr)
-            {
-                return;
-            }
-            /* first delete both subtrees */
-            deleteTree(node->left_son);
-            deleteTree(node->right_son);
+        // void deleteTree(shared_ptr<Node> node)
+        // {
+        //     if (node == nullptr)
+        //     {
+        //         return;
+        //     }
+        //     /* first delete both subtrees */
+        //     deleteTree(node->left_son);
+        //     deleteTree(node->right_son);
 
-            /* then delete the node */
-            delete node;
-        }
+        //     /* then delete the node */
+        //     delete node;
+        // }
 
         //Move constructor
-        BinaryTree(BinaryTree &&other)
+        BinaryTree(BinaryTree &other)
         {
             root = other.root;
-            return *this;
         }
 
         std::map<int, int> example;
@@ -348,14 +349,14 @@ namespace ariel
             return *this;
         }; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
         
-        pre_order_iterator begin()
+        in_order_iterator begin()
         {
-            return pre_order_iterator(root);
+            return begin_inorder();
         };
 
-        pre_order_iterator end()
+        in_order_iterator end()
         {
-            return pre_order_iterator(nullptr);
+            return end_inorder();
         }
 
         pre_order_iterator begin_preorder()
@@ -385,21 +386,21 @@ namespace ariel
 
         post_order_iterator begin_postorder(){
             shared_ptr<Node> beginNode = root;
-            beginNode= findFirstPostorder(beginNode);
+            beginNode= findFirstPostorder(root, beginNode);
             return post_order_iterator(beginNode);
         };
 
-        void findFirstPostorder(shared_ptr<Node> node, shared_ptr<Node> beginNode){
+        shared_ptr<Node> findFirstPostorder(shared_ptr<Node> node, shared_ptr<Node> beginNode){
             if (node == nullptr){
-                return;
+                return nullptr;
             }
 
-            printPostorder(node->left);
+            findFirstPostorder(node->left_son, beginNode);
 
-            printPostorder(node->right);
+            findFirstPostorder(node->right_son, beginNode);
 
             beginNode=node;
-            break;
+            return beginNode;
         }
 
         post_order_iterator end_postorder()
@@ -463,6 +464,8 @@ namespace ariel
     }; //END OF CLASS BinaryTree
 
 }; //END OF NAMESPACE ariel
+
+
 
 //Reference:
 // https://github.com/erelsgl-at-ariel/cpp-5781/tree/master/08-templates-iterators
