@@ -27,7 +27,7 @@ namespace ariel
             shared_ptr<Node> left_son;
             shared_ptr<Node> parent;
             Node(const T &val) : value(val), right_son(nullptr), left_son(nullptr), parent(nullptr) {}
-            Node(): value(0){}
+            Node() : value(0) {}
         };
 
     public:
@@ -44,7 +44,8 @@ namespace ariel
         public:
             shared_ptr<Node> preorderSuccessor(shared_ptr<Node> n)
             {
-                if (n->left_son){
+                if (n->left_son)
+                {
                     return n->left_son;
                 }
                 shared_ptr<Node> curr = n;
@@ -55,7 +56,8 @@ namespace ariel
                     parent = parent->parent;
                 }
 
-                if (parent == nullptr){
+                if (parent == nullptr)
+                {
                     return nullptr;
                 }
 
@@ -85,7 +87,7 @@ namespace ariel
             }
 
             // i++;
-            const pre_order_iterator operator++(int)
+            pre_order_iterator operator++(int)
             {
                 pre_order_iterator tmp = *this;
                 curr_node_ptr = preorderSuccessor(curr_node_ptr);
@@ -115,7 +117,8 @@ namespace ariel
                 if (node->right_son)
                 {
                     node = node->right_son;
-                    while (node->left_son){
+                    while (node->left_son)
+                    {
                         node = node->left_son;
                     }
                     return node;
@@ -150,7 +153,7 @@ namespace ariel
             }
 
             // i++;
-            const in_order_iterator operator++(int)
+            in_order_iterator operator++(int)
             {
                 in_order_iterator tmp = *this;
                 curr_node_ptr = inorderSuccessor(curr_node_ptr);
@@ -219,7 +222,7 @@ namespace ariel
                 return *this;
             }
             // i++;
-            const post_order_iterator operator++(int)
+            post_order_iterator operator++(int)
             {
                 post_order_iterator tmp = *this;
                 curr_node_ptr = postorderSuccessor(curr_node_ptr);
@@ -243,6 +246,42 @@ namespace ariel
         {
             shared_ptr<Node> root = nullptr;
         };
+
+        ~BinaryTree()
+        {
+            shared_ptr<Node> root = nullptr;
+        };
+
+        BinaryTree(BinaryTree &&other) noexcept 
+        {
+            // Move constructor
+            // It will simply shift the resources,
+            // without creating a copy.
+            //cout << "Calling Move constructor\n";
+            this->root = other.root;
+            other.root = NULL;
+        }
+
+        // Move assignment operator.
+        BinaryTree &operator=(BinaryTree &&other) noexcept
+        {
+            if (this != &other)
+            {
+                // // Free the existing resource.
+                // delete[] _data;
+
+                // // Copy the data pointer and its length from the
+                // // source object.
+                // _data = other._data;
+                // _length = other._length;
+
+                // // Release the data pointer from the source object so that
+                // // the destructor does not free the memory multiple times.
+                // other._data = nullptr;
+                // other._length = 0;
+            }
+            return *this;
+        }
 
         //Deep Copy constructor
         BinaryTree &operator=(BinaryTree const &other)
@@ -348,7 +387,7 @@ namespace ariel
             }
             return *this;
         }; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
-        
+
         in_order_iterator begin()
         {
             return begin_inorder();
@@ -384,14 +423,17 @@ namespace ariel
             return in_order_iterator(nullptr);
         }; //- מחזירות איטרטורים לצורך מעבר בסדר inorder (שמאל - אב - ימין).
 
-        post_order_iterator begin_postorder(){
+        post_order_iterator begin_postorder()
+        {
             shared_ptr<Node> beginNode = root;
-            beginNode= findFirstPostorder(root, beginNode);
+            beginNode = findFirstPostorder(root, beginNode);
             return post_order_iterator(beginNode);
         };
 
-        shared_ptr<Node> findFirstPostorder(shared_ptr<Node> node, shared_ptr<Node> beginNode){
-            if (node == nullptr){
+        shared_ptr<Node> findFirstPostorder(shared_ptr<Node> node, shared_ptr<Node> beginNode)
+        {
+            if (node == nullptr)
+            {
                 return nullptr;
             }
 
@@ -399,7 +441,7 @@ namespace ariel
 
             findFirstPostorder(node->right_son, beginNode);
 
-            beginNode=node;
+            beginNode = node;
             return beginNode;
         }
 
@@ -464,8 +506,6 @@ namespace ariel
     }; //END OF CLASS BinaryTree
 
 }; //END OF NAMESPACE ariel
-
-
 
 //Reference:
 // https://github.com/erelsgl-at-ariel/cpp-5781/tree/master/08-templates-iterators
