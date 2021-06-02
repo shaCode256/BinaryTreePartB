@@ -41,30 +41,61 @@ namespace ariel
             Node *recursive_traversal_ptr;
 
         public:
-            Node *preorderSuccessor(Node *n)
-            {
-                //a bug fix for the successor
-                if (n->left_son == nullptr && n->right_son != nullptr)
-                {
-                    return n->right_son;
-                }
-                if (n->left_son != nullptr)
-                {
-                    return n->left_son;
-                }
-                Node *curr = n;
-                Node *parent = curr->parent;
-                while (parent != nullptr && parent->right_son == curr)
-                {
-                    curr = curr->parent;
-                    parent = parent->parent;
-                }
-                if (parent == nullptr)
-                {
-                    return nullptr;
-                }
-                return parent->right_son;
+        Node* preorderSuccessor(Node* n)
+        {
+            if (n!=nullptr && n->left_son!=nullptr){
+                return n->left_son;
             }
+
+            //a bug fix for the successor
+            if (n->left_son == nullptr && n->right_son != nullptr)
+            {
+                return n->right_son;
+            }
+
+            Node *curr = n;
+            Node *parent = curr->parent;
+            while (parent != nullptr && parent->right_son == curr) {
+                curr = curr->parent;
+                parent = parent->parent;
+            }
+  
+            if (parent == nullptr){
+                return nullptr;
+            }
+  
+            return parent->right_son;
+        }
+  
+        //     Node *preorderSuccessor(Node *n)
+        //     {
+        //         //a bug fix for the successor
+        //         if (n->left_son == nullptr && n->right_son != nullptr)
+        //         {
+        //             return n->right_son;
+        //         }
+        //         if (n->left_son != nullptr)
+        //         {
+        //             return n->left_son;
+        //         }
+        //         Node *curr = n;
+        //         Node *parent = curr->parent;
+        //         while (parent != nullptr && parent->right_son == curr)
+        //         {
+        //             curr = curr->parent;
+        //             parent = parent->parent;
+        //         }
+        //         while (parent != nullptr && parent->left_son == curr && parent->right_son==nullptr) //added fix
+        //         {
+        //             curr = curr->parent;
+        //             parent = parent->parent;
+        //         }
+        //         if (parent == nullptr)
+        //         {
+        //             return nullptr;
+        //         }
+        //         return parent->right_son;
+        //     }
 
             pre_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr)
             {
@@ -184,8 +215,23 @@ namespace ariel
         public:
             Node *postorderSuccessor(Node *n)
             {
+                // if(n->parent!=nullptr && n->parent->left_son!=nullptr){
+                //     // cout << "laaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" <<endl;
+                //     n=n->parent;
+                // return n;
+                // }
+                // if(n->parent!=nullptr && n->parent->right_son!=nullptr){
+                //     n=n->parent->right_son;
+                // while( n->left_son !=nullptr){
+                //     n= n->left_son;
+                // }
+                // while( n->right_son !=nullptr){
+                //     n= n->right_son;
+                // }
+                // return n;
+                // }
                 if (n->parent == nullptr)
-                { //means it's the root
+                { //means it's the root which is the last in postorder traversal
                     return nullptr;
                 }
                 Node *parent = n->parent;
@@ -197,6 +243,10 @@ namespace ariel
                 while (curr->left_son != nullptr)
                 {
                     curr = curr->left_son;
+                }
+                while (curr->right_son != nullptr)
+                {
+                    curr = curr->right_son;
                 }
                 return curr;
             }
