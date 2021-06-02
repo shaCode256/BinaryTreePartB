@@ -43,7 +43,12 @@ namespace ariel
         public:
             Node *preorderSuccessor(Node *n)
             {
-                if (n->left_son)
+                //a bug fix for the successor
+                if (n->left_son == nullptr && n->right_son != nullptr)
+                {
+                    return n->right_son;
+                }
+                if (n->left_son != nullptr)
                 {
                     return n->left_son;
                 }
@@ -54,12 +59,10 @@ namespace ariel
                     curr = curr->parent;
                     parent = parent->parent;
                 }
-
                 if (parent == nullptr)
                 {
                     return nullptr;
                 }
-
                 return parent->right_son;
             }
 
@@ -81,6 +84,8 @@ namespace ariel
             // ++i;
             pre_order_iterator &operator++()
             {
+                Node *curr = curr_node_ptr;
+                Node *parent = curr_node_ptr->parent;
                 curr_node_ptr = preorderSuccessor(curr_node_ptr);
                 return *this;
             }
@@ -177,22 +182,24 @@ namespace ariel
             Node *recursive_traversal_ptr;
 
         public:
-            
-    Node* postorderSuccessor(Node* n)
-    {
-        if (n->parent==nullptr){ //means it's the root
-            return nullptr;
-         }
-        Node* parent = n->parent;
-        if (parent->right_son == nullptr || parent->right_son == n){
-            return parent;
-        }
-        Node* curr = parent->right_son;
-        while (curr->left_son != nullptr){
-            curr = curr->left_son;
-        }
-        return curr;
-    }
+            Node *postorderSuccessor(Node *n)
+            {
+                if (n->parent == nullptr)
+                { //means it's the root
+                    return nullptr;
+                }
+                Node *parent = n->parent;
+                if (parent->right_son == nullptr || parent->right_son == n)
+                {
+                    return parent;
+                }
+                Node *curr = parent->right_son;
+                while (curr->left_son != nullptr)
+                {
+                    curr = curr->left_son;
+                }
+                return curr;
+            }
 
             post_order_iterator(Node *ptr = nullptr) : curr_node_ptr(ptr)
             {
@@ -241,14 +248,19 @@ namespace ariel
             root = nullptr;
         };
 
-        void delete_tree(Node *node){
-            // if (node == NULL){ 
-            //     return; 
-            // }
-            // delete_tree(node->left_son); 
-            // delete_tree(node->right_son); 
-            // delete node;
-        }
+// Recursive function to delete a given binary tree
+void delete_tree(Node *root){
+    // if(root==nullptr){
+    //     return;
+    // }
+    // if(root->left_son!=nullptr){
+    //      delete_tree(root->left_son);
+    // }
+    // if(root->right_son!=nullptr){
+    //     delete_tree(root->right_son);
+    //  }
+    // delete root;
+}
 
         ~BinaryTree()
         {
@@ -289,7 +301,6 @@ namespace ariel
         //Deep Copy constructor
         BinaryTree &operator=(BinaryTree other)
         {
-            cout << "huh";
             return *this;
         }
 
@@ -318,6 +329,9 @@ namespace ariel
             {
                 root = new Node(rootAdd); // added this line
             }
+            else{
+                root->value= rootAdd;
+            }
             //std::cout << "TheRoot" << root << "\n";
             // Node*root= make_shared<Node>;
             // root->value=rootAdd;
@@ -327,22 +341,24 @@ namespace ariel
         {
             if (root == nullptr)
             {
-                throw std::invalid_argument ("ROOT IS NULL. add_left error: Element exist is not found in this tree");
+                throw std::invalid_argument("ROOT IS NULL. add_left error: Element exist is not found in this tree");
             }
             Node *nodeFound = ifNodeExists(root, exist);
             if (nodeFound != nullptr)
             {
-                if(nodeFound->left_son== nullptr){
-                nodeFound->left_son = new Node(toAddLeft);
-                nodeFound->left_son->parent = nodeFound;
+                if (nodeFound->left_son == nullptr)
+                {
+                    nodeFound->left_son = new Node(toAddLeft);
+                    nodeFound->left_son->parent = nodeFound;
                 }
-                else{
-                    nodeFound->left_son->value= toAddLeft;
+                else
+                {
+                    nodeFound->left_son->value = toAddLeft;
                 }
             }
             else
             { // element wasn't found
-                throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
+                throw std::invalid_argument("add_left error: Element exist is not found in this tree");
                 //std::cout << "HEY" <<toAddLeft;
             }
             return *this;
@@ -351,23 +367,25 @@ namespace ariel
         {
             if (root == nullptr)
             {
-                throw std::invalid_argument ("Tree is empty: add_left error: Element exist is not found in this tree");
+                throw std::invalid_argument("Tree is empty: add_left error: Element exist is not found in this tree");
             }
             Node *nodeFound = ifNodeExists(root, exist);
             if (nodeFound != nullptr)
             {
                 // std::cout << "found!";
-                if(nodeFound->right_son==nullptr){
-                nodeFound->right_son = new Node(toAddRight);
-                nodeFound->right_son->parent = nodeFound;
+                if (nodeFound->right_son == nullptr)
+                {
+                    nodeFound->right_son = new Node(toAddRight);
+                    nodeFound->right_son->parent = nodeFound;
                 }
-                else{
-                    nodeFound->right_son->value= toAddRight;
+                else
+                {
+                    nodeFound->right_son->value = toAddRight;
                 }
             }
             else
             { // element wasn't found
-                throw std::invalid_argument ("add_left error: Element exist is not found in this tree");
+                throw std::invalid_argument("add_left error: Element exist is not found in this tree");
             }
             return *this;
         }; //- כנ"ל, רק שהתוספת היא בתור הילד הימני.
@@ -410,45 +428,29 @@ namespace ariel
         post_order_iterator begin_postorder()
         {
             Node *beginNode = root;
-            cout << "start";
-            int num=0;
             beginNode = findFirstPostorder(root);
-            cout << "end";
             return post_order_iterator(beginNode);
         };
 
-        // Node* findFirstPostorder(struct Node* node, int num)
-        // {
-        //     while(num!=1){
-        //     if (node == nullptr){
-        //         return nullptr;
-        //     }
- 
-        //     findFirstPostorder(node->left_son, num);
- 
-        //     findFirstPostorder(node->right_son, num);
- 
-        //     num=1;
-        //     }
-        //     return node;
-        // }
-
-        Node* findFirstPostorder(Node* node)
+        Node *findFirstPostorder(Node *node)
         {
-            while(node != nullptr){
-                while(node->left_son!=nullptr){
-                    node= node->left_son;
+            while (node != nullptr)
+            {
+                while (node->left_son != nullptr)
+                {
+                    node = node->left_son;
                 }
-                if(node->right_son != nullptr){
-                    node= node-> right_son;
+                if (node->right_son != nullptr)
+                {
+                    node = node->right_son;
                 }
-                else{
+                else
+                {
                     return node;
                 }
             }
             return node;
         }
-
 
         post_order_iterator end_postorder()
         {
@@ -486,23 +488,22 @@ namespace ariel
             return outStream;
         }
 
-        Node* ifNodeExists(Node *node, T key)
+        Node *ifNodeExists(Node *node, T key)
         {
-            if (node == nullptr){
+            if (node == nullptr)
+            {
                 return nullptr;
             }
-
-            if (node->value == key){
+            if (node->value == key)
+            {
                 return node;
             }
-
-            Node* res1 = ifNodeExists(node->left_son, key);
-            if (res1!= nullptr){
+            Node *res1 = ifNodeExists(node->left_son, key);
+            if (res1 != nullptr)
+            {
                 return res1;
             }
-
-            Node* res2 = ifNodeExists(node->right_son, key);
-
+            Node *res2 = ifNodeExists(node->right_son, key);
             return res2;
         }
 
