@@ -248,15 +248,19 @@ namespace ariel
             root = nullptr;
         };
 
-        void delete_tree(Node *node)
-        {
-            // if (node == NULL){
-            //     return;
-            // }
-            // delete_tree(node->left_son);
-            // delete_tree(node->right_son);
-            // delete node;
-        }
+// Recursive function to delete a given binary tree
+void delete_tree(Node *root){
+    // if(root==nullptr){
+    //     return;
+    // }
+    // if(root->left_son!=nullptr){
+    //      delete_tree(root->left_son);
+    // }
+    // if(root->right_son!=nullptr){
+    //     delete_tree(root->right_son);
+    //  }
+    // delete root;
+}
 
         ~BinaryTree()
         {
@@ -297,7 +301,6 @@ namespace ariel
         //Deep Copy constructor
         BinaryTree &operator=(BinaryTree other)
         {
-            cout << "huh";
             return *this;
         }
 
@@ -350,9 +353,6 @@ namespace ariel
                 }
                 else
                 {
-                    if(nodeFound->left_son->value== toAddLeft){
-                        throw std::invalid_argument("add_left error: Element with this value alreay exists in that position");
-                    }
                     nodeFound->left_son->value = toAddLeft;
                 }
             }
@@ -380,9 +380,6 @@ namespace ariel
                 }
                 else
                 {
-                    if(nodeFound->right_son->value== toAddRight){
-                        throw std::invalid_argument("add_right error: Element with this value alreay exists in that position");
-                    }
                     nodeFound->right_son->value = toAddRight;
                 }
             }
