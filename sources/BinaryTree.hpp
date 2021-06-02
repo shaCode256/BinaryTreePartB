@@ -326,6 +326,9 @@ namespace ariel
             {
                 root = new Node(rootAdd); // added this line
             }
+            else{
+                root->value= rootAdd;
+            }
             //std::cout << "TheRoot" << root << "\n";
             // Node*root= make_shared<Node>;
             // root->value=rootAdd;
