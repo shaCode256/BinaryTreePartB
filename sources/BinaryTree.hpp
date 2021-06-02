@@ -435,22 +435,6 @@ namespace ariel
             return post_order_iterator(beginNode);
         };
 
-        // Node* findFirstPostorder(struct Node* node, int num)
-        // {
-        //     while(num!=1){
-        //     if (node == nullptr){
-        //         return nullptr;
-        //     }
-
-        //     findFirstPostorder(node->left_son, num);
-
-        //     findFirstPostorder(node->right_son, num);
-
-        //     num=1;
-        //     }
-        //     return node;
-        // }
-
         Node *findFirstPostorder(Node *node)
         {
             while (node != nullptr)
